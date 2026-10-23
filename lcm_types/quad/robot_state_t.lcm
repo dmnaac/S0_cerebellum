@@ -1,0 +1,9 @@
+package quad;
+
+struct robot_state_t {
+    int64_t utime;
+    imu_t imu;
+    joint_state_t joints;
+    float previous_action[12];
+    user_cmd_t cmd;
+}

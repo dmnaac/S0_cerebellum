@@ -1,0 +1,10 @@
+package quad;
+
+struct joint_state_t {
+    int64_t utime;
+    float position[12];    // rad
+    float velocity[12];    // rad/s
+    float torque[12];      // Nm
+    float temperature[12]; // °C
+    int16_t error[12];     // 电机错误码
+}

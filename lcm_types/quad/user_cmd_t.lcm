@@ -1,0 +1,10 @@
+package quad;
+
+struct user_cmd_t {
+    int64_t utime;
+    float vx;         // m/s
+    float vy;         // m/s
+    float yaw_rate;   // rad/s
+    int8_t mode;      // deprecated, use state_name
+    string state_name; // e.g., "stand", "trot", "gallop"
+}

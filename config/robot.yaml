@@ -1,0 +1,20 @@
+robot_name: quad_cerebellum
+control_frequency: 1000.0
+policy_frequency: 50.0
+max_roll: 0.785
+max_pitch: 0.785
+comm_timeout_us: 50000
+
+default_stand_position:
+  - 0.0   # LF hip
+  - 0.7   # LF thigh
+  - -1.4  # LF calf
+  - 0.0   # RF hip
+  - 0.7   # RF thigh
+  - -1.4  # RF calf
+  - 0.0   # LH hip
+  - 0.7   # LH thigh
+  - -1.4  # LH calf
+  - 0.0   # RH hip
+  - 0.7   # RH thigh
+  - -1.4  # RH calf

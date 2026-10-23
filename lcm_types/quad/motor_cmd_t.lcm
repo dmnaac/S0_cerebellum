@@ -1,0 +1,10 @@
+package quad;
+
+struct motor_cmd_t {
+    int64_t utime;
+    float position[12];
+    float velocity[12];
+    float kp[12];
+    float kd[12];
+    float torque[12];
+}

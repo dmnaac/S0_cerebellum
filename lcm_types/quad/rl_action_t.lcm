@@ -1,0 +1,6 @@
+package quad;
+
+struct rl_action_t {
+    int64_t utime;
+    float position_offset[12];  // 绝对目标关节位置（由 state_machine 已合并 default_stand + offset）
+}

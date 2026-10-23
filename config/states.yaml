@@ -1,0 +1,134 @@
+initial_state: stand
+
+states:
+  # Static states
+  - name: stand
+    type: static
+    target_position:
+      - 0.0   # LF hip
+      - 0.7   # LF thigh
+      - -1.4  # LF calf
+      - 0.0   # RF hip
+      - 0.7   # RF thigh
+      - -1.4  # RF calf
+      - 0.0   # LH hip
+      - 0.7   # LH thigh
+      - -1.4  # LH calf
+      - 0.0   # RH hip
+      - 0.7   # RH thigh
+      - -1.4  # RH calf
+    kp: 80.0
+    kd: 3.0
+    transition_duration: 0.5
+
+  - name: crouch
+    type: static
+    target_position:
+      - 0.0
+      - 1.0
+      - -2.0
+      - 0.0
+      - 1.0
+      - -2.0
+      - 0.0
+      - 1.0
+      - -2.0
+      - 0.0
+      - 1.0
+      - -2.0
+    kp: 80.0
+    kd: 3.0
+    transition_duration: 0.6
+
+  - name: lie
+    type: static
+    target_position:
+      - 0.0
+      - 1.4
+      - -2.7
+      - 0.0
+      - 1.4
+      - -2.7
+      - 0.0
+      - 1.4
+      - -2.7
+      - 0.0
+      - 1.4
+      - -2.7
+    kp: 50.0
+    kd: 2.0
+    transition_duration: 1.0
+
+  - name: lock
+    type: static
+    target_position:
+      - 0.0
+      - 0.7
+      - -1.4
+      - 0.0
+      - 0.7
+      - -1.4
+      - 0.0
+      - 0.7
+      - -1.4
+      - 0.0
+      - 0.7
+      - -1.4
+    kp: 150.0
+    kd: 5.0
+    transition_duration: 0.2
+
+  # Dynamic gait states
+  - name: crawl
+    type: gait
+    gait_id: 1
+    policy: default
+    default_action:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+    transition_duration: 0.5
+
+  - name: walk
+    type: gait
+    gait_id: 2
+    policy: default
+    default_action: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    transition_duration: 0.4
+
+  - name: trot
+    type: gait
+    gait_id: 3
+    policy: default
+    default_action: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    transition_duration: 0.3
+
+  - name: pace
+    type: gait
+    gait_id: 4
+    policy: default
+    default_action: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    transition_duration: 0.3
+
+  - name: bound
+    type: gait
+    gait_id: 5
+    policy: default
+    default_action: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    transition_duration: 0.4
+
+  - name: gallop
+    type: gait
+    gait_id: 6
+    policy: default
+    default_action: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    transition_duration: 0.5

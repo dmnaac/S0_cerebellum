@@ -1,0 +1,9 @@
+package quad;
+
+struct state_status_t {
+    int64_t utime;
+    string current_state;
+    string target_state;
+    boolean in_transition;
+    float transition_progress;  // 0.0 ~ 1.0
+}

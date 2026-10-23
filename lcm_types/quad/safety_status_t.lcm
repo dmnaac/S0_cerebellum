@@ -1,0 +1,9 @@
+package quad;
+
+struct safety_status_t {
+    int64_t utime;
+    boolean e_stop;
+    boolean comm_timeout;
+    int8_t level;  // 0=normal, 1=warning, 2=fault
+    string message;
+}

@@ -1,0 +1,109 @@
+motors:
+  - id: 1
+    name: LF_HIP
+    can_iface: can0
+    position_min: -1.0
+    position_max: 1.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 2
+    name: LF_THIGH
+    can_iface: can0
+    position_min: -3.14
+    position_max: 3.14
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 3
+    name: LF_CALF
+    can_iface: can0
+    position_min: -2.7
+    position_max: -0.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 4
+    name: RF_HIP
+    can_iface: can1
+    position_min: -1.0
+    position_max: 1.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 5
+    name: RF_THIGH
+    can_iface: can1
+    position_min: -3.14
+    position_max: 3.14
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 6
+    name: RF_CALF
+    can_iface: can1
+    position_min: -2.7
+    position_max: -0.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 7
+    name: LH_HIP
+    can_iface: can2
+    position_min: -1.0
+    position_max: 1.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 8
+    name: LH_THIGH
+    can_iface: can2
+    position_min: -3.14
+    position_max: 3.14
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 9
+    name: LH_CALF
+    can_iface: can2
+    position_min: -2.7
+    position_max: -0.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 10
+    name: RH_HIP
+    can_iface: can3
+    position_min: -1.0
+    position_max: 1.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 11
+    name: RH_THIGH
+    can_iface: can3
+    position_min: -3.14
+    position_max: 3.14
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
+  - id: 12
+    name: RH_CALF
+    can_iface: can3
+    position_min: -2.7
+    position_max: -0.0
+    velocity_max: 20.0
+    torque_max: 20.0
+    kp_default: 50.0
+    kd_default: 2.0
