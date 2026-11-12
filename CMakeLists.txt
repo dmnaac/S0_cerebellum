@@ -26,6 +26,15 @@ target_include_directories(cerebellum_lcm PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+# Third-party: RobStride motor driver (vendored verbatim, do not modify)
+add_library(robstride_driver STATIC
+    third_party/robstride/src/motor_cfg.cpp
+)
+target_include_directories(robstride_driver PUBLIC
+    ${CMAKE_SOURCE_DIR}/third_party/robstride/include
+)
+target_compile_features(robstride_driver PUBLIC cxx_std_17)
+
 # Include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -46,6 +55,7 @@ set(CORE_SOURCES
 set(DRIVER_SOURCES
     src/drivers/can_bus.cpp
     src/drivers/joint_motor.cpp
+    src/drivers/robstride_motor_adapter.cpp
 )
 
 set(RL_SOURCES
@@ -70,6 +80,7 @@ target_link_libraries(cerebellum_core PUBLIC
     yaml-cpp
     cerebellum_lcm
     lcm
+    robstride_driver
 )
 
 # Nodes

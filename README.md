@@ -19,10 +19,12 @@
 ├── scripts/                # 启动与配置脚本
 ├── src/                    # 源码
 │   ├── core/               # 核心工具（周期任务、滤波、配置、状态机）
-│   ├── drivers/            # 驱动（CAN、电机抽象）
+│   ├── drivers/            # 驱动（CAN、电机抽象、RobStride 适配器）
 │   ├── nodes/              # 7 个控制节点
 │   ├── rl/                 # RL 策略模型抽象
 │   └── utils/              # 日志与配置解析
+├── third_party/            # 外部引入代码（原样保留，不得修改）
+│   └── robstride/          # RobStride RS03 电机驱动（Apache-2.0）
 └── tests/                  # 测试程序
 ```
 
@@ -89,14 +91,19 @@ cd build
 ./test_can can0
 ```
 
+## 电机驱动说明
+
+- `third_party/robstride/` 为外部引入的 RobStride RS03 电机驱动源码（Apache-2.0），**原样保留，不得修改**；
+- `src/drivers/robstride_motor_adapter.cpp` 是适配器，把第三方 `RobStrideMotor` 包装成 `JointMotor` 接口（仅做参数顺序映射与反馈缓存）；
+- `motor_driver_node` 只依赖 `JointMotor` 接口与 `createMotor()` 工厂，更换电机品牌时只需新增适配器并在工厂中加一个分支；
+- 反馈为请求-应答模式：`setCommand()` 同步返回反馈，`readState()` 读取最近一次反馈。
+
 ## 后续开发提示
 
-1. 在 `src/drivers/` 中实现具体电机协议（Unitree、DM 等）
+1. 在 `src/nodes/sensor_node.cpp` 中接入真实 IMU 驱动
 2. 在 `src/rl/` 中实现 `OnnxPolicy` / `RknnPolicy`
-3. 在 `src/nodes/motor_driver_node.cpp` 中接入真实 CAN 电机驱动
-4. 在 `src/nodes/sensor_node.cpp` 中接入真实 IMU 驱动
-5. 在 `src/nodes/rl_policy_node.cpp` 中加载训练好的策略模型
-6. 调整 `config/robot.yaml` 和 `config/motors.yaml` 中的机器人参数
+3. 在 `src/nodes/rl_policy_node.cpp` 中加载训练好的策略模型
+4. 调整 `config/robot.yaml`、`config/motors.yaml`、`config/states.yaml` 中的机器人参数
 
 ## 状态机
 

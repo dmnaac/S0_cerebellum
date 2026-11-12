@@ -11,6 +11,9 @@ struct MotorConfig {
     int id;
     std::string can_iface;
     std::string name;
+    std::string protocol;   // motor driver protocol, e.g. "robstride"
+    int master_id = 0xFD;   // host CAN ID on the bus
+    int actuator_type = 3;  // RobStride actuator model (3 = RS03)
     double position_min;
     double position_max;
     double velocity_max;
