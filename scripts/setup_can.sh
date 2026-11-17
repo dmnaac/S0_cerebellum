@@ -5,7 +5,7 @@ set -e
 
 BITRATE=${BITRATE:-1000000}
 
-for dev in can0 can1 can2 can3; do
+for dev in can0 can1 can2 can3 can4; do
     if ip link show "$dev" &> /dev/null; then
         echo "Configuring $dev with bitrate $BITRATE"
         sudo ip link set "$dev" down || true

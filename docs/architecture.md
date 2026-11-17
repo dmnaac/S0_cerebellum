@@ -51,7 +51,9 @@
 | 进程 | 输入 | 输出 | 频率 | 核心职责 |
 |------|------|------|------|----------|
 | `command_node` | 手柄/上位机 | `user_cmd_t` | 50Hz | 解析遥控指令、生成 `state_name`、指令平滑 |
-| `sensor_node` | IMU 硬件、关节反馈 | `imu_t`、`robot_state_t` | 1kHz | IMU 采集、数据同步、坐标系转换 |
+| `power_board_node` | `POWER_CMD` + can4 | `power_status_t`、`power_currents_t` | 20Hz | 电源板版本查询、电源轨使能、电压/电流/温度/故障采集 |
+| `battery_node` | BMS (RS485) | `battery_status_t` | 1Hz | BMS 轮询：总压/电流/SOC/单体电压/保护状态 |
+| `sensor_node` | IMU 硬件、关节反馈 | `imu_t`、`robot_state_t` | IMU 1kHz / 聚合 100Hz | IMU 采集（HiPNUC 串口）、数据同步、坐标系转换 |
 | `rl_policy_node` | `robot_state_t` + `user_cmd_t` | `rl_action_t`、`state_status_t` | 50~100Hz | 状态机管理、静态姿态/动态步态输出、RL 推理 |
 | `motion_control_node` | `rl_action_t` + `JOINT_STATE` | `motor_cmd_t` | 1kHz | 插值到 1kHz、PD 计算、输出限幅 |
 | `motor_driver_node` | `motor_cmd_t` | `joint_state_t` | 1kHz | SocketCAN 收发、电机状态机、错误码处理 |
@@ -72,6 +74,10 @@
 | `STATE_STATUS` | `state_status_t` | rl_policy_node | safety_monitor, logger, debug_viz | 50~100Hz |
 | `MOTOR_CMD` | `motor_cmd_t` | motion_control_node | motor_driver_node, safety_monitor, logger | 1kHz |
 | `SAFETY_STATUS` | `safety_status_t` | safety_monitor | 所有节点 | 事件/1kHz |
+| `POWER_STATUS` | `power_status_t` | power_board_node | safety_monitor, logger | 20Hz |
+| `POWER_CURRENTS` | `power_currents_t` | power_board_node | logger | 20Hz |
+| `POWER_CMD` | `power_cmd_t` | 任意节点 | power_board_node | 事件 |
+| `BATTERY_STATUS` | `battery_status_t` | battery_node | safety_monitor, logger | 1Hz |
 
 ### 消息定义建议
 
@@ -375,7 +381,10 @@ S0_cerebellum/
 │   ├── rl_action_t.lcm
 │   ├── state_status_t.lcm
 │   ├── motor_cmd_t.lcm
-│   └── safety_status_t.lcm
+│   ├── safety_status_t.lcm
+│   ├── power_status_t.lcm
+│   ├── power_currents_t.lcm
+│   └── power_cmd_t.lcm
 ├── include/
 │   ├── core/
 │   │   ├── state.hpp
@@ -391,6 +400,8 @@ S0_cerebellum/
 │   └── utils/
 ├── src/
 │   ├── nodes/
+│   │   ├── power_board_node.cpp
+│   │   ├── battery_node.cpp
 │   │   ├── command_node.cpp
 │   │   ├── sensor_node.cpp
 │   │   ├── rl_policy_node.cpp
@@ -407,12 +418,23 @@ S0_cerebellum/
 │   │   ├── lowpass_filter.cpp
 │   │   └── robot_config.cpp
 │   ├── drivers/
+│   │   ├── can_bus.cpp
+│   │   ├── joint_motor.cpp
+│   │   ├── robstride_motor_adapter.cpp
+│   │   ├── power_board.cpp
+│   │   ├── imu_driver.cpp
+│   │   └── hipnuc_imu_driver.cpp
 │   ├── rl/
 │   └── utils/
+├── third_party/
+│   ├── robstride/           # RS03 电机驱动（原样引入，Apache-2.0）
+│   ├── hipnuc/              # HiPNUC IMU 库 + Linux 串口层（原样引入，Apache-2.0）
+│   └── battery/             # BMS Modbus RTU 驱动（原样引入，含规约文档）
 ├── config/
 │   ├── robot.yaml
 │   ├── motors.yaml
-│   └── states.yaml
+│   ├── states.yaml
+│   └── power.yaml
 ├── scripts/
 │   ├── setup_can.sh
 │   └── launch.sh

@@ -1,0 +1,14 @@
+# Power board configuration
+# CAN interface: 5th channel of the USB-CAN HUB (exclusive, legs use can0~can3)
+can_iface: can4
+power_id: 170          # 0xAA, power board default CAN ID
+
+# Data acquisition mode: "poll" (query 02, default) or "auto" (type 06 report)
+mode: poll
+poll_hz: 20.0
+query_timeout_ms: 30
+
+# Initial rail states applied at startup
+v12_on: true           # 12V rail
+vmbus_on: true         # motor bus (VMBUS) — enable so joints can be powered
+v24_on: false          # 24V rail

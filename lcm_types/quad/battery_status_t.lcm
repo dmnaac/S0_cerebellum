@@ -1,0 +1,17 @@
+package quad;
+
+struct battery_status_t {
+    int64_t utime;
+    float pack_voltage_V;
+    float current_A;                     // charge positive
+    float remaining_capacity_Ah;
+    float nominal_capacity_Ah;
+    float cell_voltages[16];             // trailing entries are 0 on <16S packs
+    float temp1_C;
+    float temp2_C;
+    int8_t rsoc_percent;
+    boolean charge_fet_closed;
+    boolean discharge_fet_closed;
+    int32_t protection_bits;             // reg 42, bit set = protecting
+    int8_t error_code;                   // bms::Error, 0 = ok
+}

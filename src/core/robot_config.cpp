@@ -44,6 +44,14 @@ bool loadRobotConfig(const std::string& filepath, RobotConfig& config) {
             config.default_stand_position = Eigen::Map<const Eigen::VectorXd>(stand.data(), stand.size());
         }
 
+        if (root["imu"]) {
+            const auto& imu = root["imu"];
+            config.imu.protocol = imu["protocol"].as<std::string>(config.imu.protocol);
+            config.imu.port = imu["port"].as<std::string>(config.imu.port);
+            config.imu.baud = imu["baud"].as<int>(config.imu.baud);
+            config.imu.read_timeout_ms = imu["read_timeout_ms"].as<int>(config.imu.read_timeout_ms);
+        }
+
         return true;
     } catch (const std::exception& e) {
         std::cerr << "Failed to load robot config: " << e.what() << std::endl;

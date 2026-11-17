@@ -22,9 +22,17 @@ struct MotorConfig {
     double kd_default;
 };
 
+struct ImuConfig {
+    std::string protocol = "hipnuc";  // IMU driver protocol
+    std::string port = "/dev/ttyUSB0";
+    int baud = 921600;
+    int read_timeout_ms = 100;
+};
+
 struct RobotConfig {
     std::vector<MotorConfig> motors;
     Eigen::VectorXd default_stand_position;
+    ImuConfig imu;
     double control_frequency;
     double policy_frequency;
     double max_roll;

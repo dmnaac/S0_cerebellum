@@ -1,0 +1,9 @@
+package quad;
+
+struct power_currents_t {
+    int64_t utime;
+    float al;   // A, left front leg bus current
+    float ar;   // A, right front leg bus current
+    float ll;   // A, left hind leg bus current
+    float lr;   // A, right hind leg bus current
+}

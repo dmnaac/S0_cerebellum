@@ -1,0 +1,15 @@
+package quad;
+
+struct power_status_t {
+    int64_t utime;
+    float battery_voltage;    // V
+    float motor_voltage;      // V (VMBUS)
+    float bus_current;        // A
+    int8_t temperature;       // deg C
+    int32_t fault_bits;       // bit0~14 faults, bit20~23 rail status
+    boolean rail12v_on;
+    boolean softstart_on;
+    boolean vmbus_on;
+    boolean rail24v_on;
+    string version;           // firmware version, e.g. "PBV1.00"
+}

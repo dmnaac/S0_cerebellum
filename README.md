@@ -24,7 +24,9 @@
 │   ├── rl/                 # RL 策略模型抽象
 │   └── utils/              # 日志与配置解析
 ├── third_party/            # 外部引入代码（原样保留，不得修改）
-│   └── robstride/          # RobStride RS03 电机驱动（Apache-2.0）
+│   ├── robstride/          # RobStride RS03 电机驱动（Apache-2.0）
+│   ├── hipnuc/             # HiPNUC IMU 解码库 + Linux 串口层（Apache-2.0）
+│   └── battery/            # BMS Modbus RTU 驱动（含规约文档）
 └── tests/                  # 测试程序
 ```
 
@@ -74,11 +76,13 @@ sudo ./scripts/setup_can.sh
 或单独启动：
 
 ```bash
+./build/power_board_node config/power.yaml
+./build/battery_node config/battery.yaml
 ./build/command_node
-./build/sensor_node
-./build/rl_policy_node
+./build/sensor_node config/robot.yaml
+./build/rl_policy_node config/states.yaml config/robot.yaml
 ./build/motion_control_node
-./build/motor_driver_node
+./build/motor_driver_node config/motors.yaml
 ./build/safety_monitor_node
 ./build/logger_node
 ```
@@ -97,6 +101,28 @@ cd build
 - `src/drivers/robstride_motor_adapter.cpp` 是适配器，把第三方 `RobStrideMotor` 包装成 `JointMotor` 接口（仅做参数顺序映射与反馈缓存）；
 - `motor_driver_node` 只依赖 `JointMotor` 接口与 `createMotor()` 工厂，更换电机品牌时只需新增适配器并在工厂中加一个分支；
 - 反馈为请求-应答模式：`setCommand()` 同步返回反馈，`readState()` 读取最近一次反馈。
+
+## IMU
+
+- `third_party/hipnuc/` 为外部引入的 HiPNUC IMU 解码库与 Linux 串口层（Apache-2.0，SPDX 声明随源文件保留），**原样保留，不得修改**；
+- `src/drivers/hipnuc_imu_driver.cpp` 是适配器，把 `hipnuc_serial_read()` 包装成 `ImuDriver` 接口（仅做字段映射与有效位转换）；
+- `sensor_node` 经 `createImuDriver()` 工厂创建驱动，串口参数（`port`/`baud`）在 `config/robot.yaml` 的 `imu:` 段配置；设备输出 1000Hz，按实际频率发布 `IMU`，`ROBOT_STATE` 聚合为 100Hz；
+- 坐标系保持设备原始轴向输出，依赖安装时 IMU 轴向与机体对齐（设备 COORD 设置影响四元数语义，上板需确认）。
+
+## BMS（电池保护板）
+
+- `third_party/battery/` 为外部引入的 BMS Modbus RTU 驱动（原样保留，不得修改），规约文档随附；
+- 链路：RK3588 UART(TTL) → TTL 转 485 模块 → BMS，9600 8N1，从机地址 1；
+- `battery_node` 1Hz 轮询，发布 `BATTERY_STATUS`（总压/电流/容量/16 串单体电压/双温度/SOC/FET/保护位）；保护位变化时打印日志；每 60s 后台读一次保护参数（仅日志）；
+- 串口权限：`sudo usermod -aG dialout $USER`；建议用 udev 规则固定设备名；
+- `safety_monitor_node` 订阅 `BATTERY_STATUS`：BMS 保护中 → **E-Stop**；读错误/SOC 低/单体压差大/数据超时 → 警告。
+
+## 电源板
+
+- 电源板接入 USB-CAN HUB 第 5 路（`can4`，独占），协议见《电源板使用说明书 V1.5》；
+- `power_board_node` 启动时查询版本号并按 `config/power.yaml` 配置开启各电源轨（默认开 12V + VMBUS），随后以 20Hz 轮询电压/电流/温度/故障位，发布 `POWER_STATUS` 与 `POWER_CURRENTS`；
+- 其他节点可通过 `POWER_CMD` 控制电源轨开关、重启、清故障；
+- `safety_monitor_node` 订阅 `POWER_STATUS`：电源芯片过流/过温、电源板过温（>100°C）触发 E-Stop，其余故障位与电压异常触发警告。
 
 ## 后续开发提示
 

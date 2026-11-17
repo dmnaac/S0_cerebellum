@@ -5,6 +5,13 @@ max_roll: 0.785
 max_pitch: 0.785
 comm_timeout_us: 50000
 
+imu:
+  protocol: hipnuc
+  port: /dev/ttyUSB0   # TODO: RK3588 has multiple USB serial ports; pin the
+                       # final one via /dev/serial/by-id/ once hardware is fixed
+  baud: 921600
+  read_timeout_ms: 100
+
 default_stand_position:
   - 0.0   # LF hip
   - 0.7   # LF thigh

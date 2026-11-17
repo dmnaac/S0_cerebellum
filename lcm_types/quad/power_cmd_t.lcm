@@ -1,0 +1,10 @@
+package quad;
+
+struct power_cmd_t {
+    int64_t utime;
+    int8_t v12;      // -1: keep, 0: off, 1: on
+    int8_t vmbus;    // -1: keep, 0: off, 1: on
+    int8_t v24;      // -1: keep, 0: off, 1: on
+    boolean restart;      // power board restart
+    boolean clear_fault;  // clear latched faults
+}

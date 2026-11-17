@@ -1,10 +1,14 @@
 #include <lcm/lcm-cpp.hpp>
+#include <quad/battery_status_t.hpp>
 #include <quad/imu_t.hpp>
 #include <quad/joint_state_t.hpp>
 #include <quad/motor_cmd_t.hpp>
+#include <quad/power_currents_t.hpp>
+#include <quad/power_status_t.hpp>
 #include <quad/rl_action_t.hpp>
 #include <quad/robot_state_t.hpp>
 #include <quad/safety_status_t.hpp>
+#include <quad/state_status_t.hpp>
 #include <quad/user_cmd_t.hpp>
 
 #include <fstream>
@@ -62,6 +66,26 @@ void safetyHandler(const lcm::ReceiveBuffer* rbuf, const std::string& channel,
     logMessage(*ctx, channel, msg->utime);
 }
 
+void powerStatusHandler(const lcm::ReceiveBuffer* rbuf, const std::string& channel,
+                        const quad::power_status_t* msg, LoggerContext* ctx) {
+    logMessage(*ctx, channel, msg->utime);
+}
+
+void powerCurrentsHandler(const lcm::ReceiveBuffer* rbuf, const std::string& channel,
+                          const quad::power_currents_t* msg, LoggerContext* ctx) {
+    logMessage(*ctx, channel, msg->utime);
+}
+
+void batteryStatusHandler(const lcm::ReceiveBuffer* rbuf, const std::string& channel,
+                          const quad::battery_status_t* msg, LoggerContext* ctx) {
+    logMessage(*ctx, channel, msg->utime);
+}
+
+void stateStatusHandler(const lcm::ReceiveBuffer* rbuf, const std::string& channel,
+                        const quad::state_status_t* msg, LoggerContext* ctx) {
+    logMessage(*ctx, channel, msg->utime);
+}
+
 int main(int argc, char** argv) {
     LoggerContext ctx;
     if (!ctx.lcm.good()) {
@@ -85,8 +109,12 @@ int main(int argc, char** argv) {
     ctx.lcm.subscribe("JOINT_STATE", &jointHandler, &ctx);
     ctx.lcm.subscribe("ROBOT_STATE", &robotStateHandler, &ctx);
     ctx.lcm.subscribe("RL_ACTION", &actionHandler, &ctx);
+    ctx.lcm.subscribe("STATE_STATUS", &stateStatusHandler, &ctx);
     ctx.lcm.subscribe("MOTOR_CMD", &motorCmdHandler, &ctx);
     ctx.lcm.subscribe("SAFETY_STATUS", &safetyHandler, &ctx);
+    ctx.lcm.subscribe("POWER_STATUS", &powerStatusHandler, &ctx);
+    ctx.lcm.subscribe("POWER_CURRENTS", &powerCurrentsHandler, &ctx);
+    ctx.lcm.subscribe("BATTERY_STATUS", &batteryStatusHandler, &ctx);
 
     std::cout << "logger_node started, logging to " << log_file << std::endl;
 

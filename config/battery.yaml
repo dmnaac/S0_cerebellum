@@ -1,0 +1,15 @@
+# BMS (battery protection board) configuration
+# Link: RK3588 UART (TTL) -> TTL-to-RS485 module -> BMS, 9600 8N1
+port: /dev/ttyS1
+baud: 9600               # fixed by the Modbus spec
+slave: 1                 # default BMS slave address
+
+# RS485 direction control: "auto" (auto-direction module) or "kernel"
+# (kernel RS485 mode, DE/RE wired to UART RTS). Confirmed working: auto.
+rs485_direction: auto
+rts_before_us: 0         # only used with "kernel"
+rts_after_us: 0
+
+poll_interval_ms: 1000   # ~1Hz; full register read takes ~95ms @9600
+param_read_interval_s: 60   # background protection-parameter read (log only)
+max_consecutive_errors: 5

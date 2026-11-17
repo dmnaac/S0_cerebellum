@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(cerebellum LANGUAGES CXX)
+project(cerebellum LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -35,6 +35,35 @@ target_include_directories(robstride_driver PUBLIC
 )
 target_compile_features(robstride_driver PUBLIC cxx_std_17)
 
+# Third-party: HiPNUC IMU decoder core + Linux serial layer (vendored verbatim)
+add_library(hipnuc STATIC
+    third_party/hipnuc/hipnuc/hipnuc_data.c
+    third_party/hipnuc/hipnuc/hipnuc_decoder.c
+    third_party/hipnuc/hipnuc/hipnuc_nmea.c
+    third_party/hipnuc/hipnuc/hipnuc_can.c
+    third_party/hipnuc/hipnuc/hipnuc_i2c.c
+)
+target_include_directories(hipnuc PUBLIC ${CMAKE_SOURCE_DIR}/third_party/hipnuc/hipnuc)
+set_target_properties(hipnuc PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS OFF)
+
+add_library(hipnuc_serial STATIC
+    third_party/hipnuc/serial/hipnuc_serial.c
+    third_party/hipnuc/serial/hipnuc_serial_io.c
+)
+target_include_directories(hipnuc_serial PUBLIC ${CMAKE_SOURCE_DIR}/third_party/hipnuc/serial)
+target_link_libraries(hipnuc_serial PUBLIC hipnuc)
+set_target_properties(hipnuc_serial PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED YES)
+
+# Third-party: BMS Modbus RTU driver (vendored verbatim, POSIX serial backend)
+if(UNIX)
+    add_library(battery_bms STATIC
+        third_party/battery/src/driver.cpp
+        third_party/battery/src/serial_posix.cpp
+    )
+    target_include_directories(battery_bms PUBLIC ${CMAKE_SOURCE_DIR}/third_party/battery/include)
+    target_compile_features(battery_bms PUBLIC cxx_std_17)
+endif()
+
 # Include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -56,6 +85,9 @@ set(DRIVER_SOURCES
     src/drivers/can_bus.cpp
     src/drivers/joint_motor.cpp
     src/drivers/robstride_motor_adapter.cpp
+    src/drivers/power_board.cpp
+    src/drivers/imu_driver.cpp
+    src/drivers/hipnuc_imu_driver.cpp
 )
 
 set(RL_SOURCES
@@ -81,10 +113,13 @@ target_link_libraries(cerebellum_core PUBLIC
     cerebellum_lcm
     lcm
     robstride_driver
+    hipnuc_serial
 )
 
 # Nodes
 set(NODES
+    power_board_node
+    battery_node
     command_node
     sensor_node
     rl_policy_node
@@ -94,10 +129,18 @@ set(NODES
     logger_node
 )
 
+if(NOT UNIX)
+    list(REMOVE_ITEM NODES battery_node)
+endif()
+
 foreach(node ${NODES})
     add_executable(${node} src/nodes/${node}.cpp)
     target_link_libraries(${node} PRIVATE cerebellum_core)
 endforeach()
+
+if(UNIX)
+    target_link_libraries(battery_node PRIVATE battery_bms)
+endif()
 
 # Tests
 if(BUILD_TESTS)
